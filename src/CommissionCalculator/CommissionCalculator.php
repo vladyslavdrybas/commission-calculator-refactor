@@ -4,74 +4,50 @@ declare(strict_types=1);
 
 namespace App\CommissionCalculator;
 
-use App\CommissionCalculator\Reader\BinListDataReader;
-use App\CommissionCalculator\Reader\BinNumberCountryDataReader;
-use App\CommissionCalculator\Reader\ExchangeRateDataReader;
-use App\CommissionCalculator\Reader\ExchangeRatesApiDataReader;
-use UnexpectedValueException;
+use App\CommissionCalculator\DataTransferObject\TransactionDto;
 
 class CommissionCalculator
 {
-    protected CommissionCalculatorConfig $config;
-    protected BinNumberCountryDataReader $binNumberCountryDataReader;
-    protected ExchangeRateDataReader $exchangeRateDataReader;
+    protected array $modifiers;
 
-    public function __construct(
-        CommissionCalculatorConfig $config,
-        BinNumberCountryDataReader $binNumberCountryDataReader,
-        ExchangeRateDataReader $exchangeRateDataReader
-    ) {
-        $this->config = $config;
-        $this->binNumberCountryDataReader = $binNumberCountryDataReader;
-        $this->exchangeRateDataReader = $exchangeRateDataReader;
+    public function __construct(array $modifiers)
+    {
+        $this->modifiers = $modifiers;
     }
 
     public function calculate(string $commissionSourceName): array
     {
-        $commissions = [];
-
         $transactions = explode("\n", file_get_contents($commissionSourceName));
-        foreach ($transactions as $transaction) {
+        $transactionsCollection = [];
+        foreach ($transactions as $key => $transaction) {
             if (empty($transaction)) {
                 break;
             }
 
             ['bin' => $bin, 'amount' => $amount, 'currency' => $currency] = $this->fetchTransaction($transaction);
 
-            $this->binNumberCountryDataReader->addBin($bin);
-            if (!$this->binNumberCountryDataReader->hasCountryAlpha2()) {
-                throw new UnexpectedValueException('Cannot get bin country.');
+            $transactionDto = new TransactionDto($bin, $amount * 1.0, $currency);
+
+            foreach ($this->modifiers as $modifier) {
+                $modifier->modify($transactionDto);
             }
 
-            $this->exchangeRateDataReader->addCurrency($currency);
-            $rate = $this->exchangeRateDataReader->getRate();
+            $transactionsCollection[$key] = $transactionDto;
 
-            if ($currency == 'EUR' or $rate == 0) {
-                $amntFixed = $amount;
-            }
-            if ($currency != 'EUR' or $rate > 0) {
-                $amntFixed = $amount / $rate;
-            }
-
-            $isEu = $this->isEu($this->binNumberCountryDataReader->getCountryAlpha2());
-
-            $commission = $amntFixed * ($isEu === true ? 0.01 : 0.02);
-            $commissions[] = $commission;
-
-            echo sprintf("Currency: %s; Commission: %s", $currency, $commission);
+            echo sprintf(
+                "Currency: %s; Commission: %s; Amount: %s;",
+                $transactionDto->getCurrency(),
+                $transactionDto->getCommission(),
+                $transactionDto->getAmount()
+            );
             print "\n";
         }
 
-        return $commissions;
+        return $transactionsCollection;
     }
 
     protected function fetchTransaction($row): array
     {
         return json_decode($row, true);
-    }
-
-    protected function isEu($countryAlpha2): bool
-    {
-        return in_array($countryAlpha2, $this->config->getAllowedEuropeCountries());
     }
 }
