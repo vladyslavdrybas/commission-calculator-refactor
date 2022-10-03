@@ -6,6 +6,7 @@ namespace App\CommissionCalculator;
 
 use App\CommissionCalculator\Reader\BinListDataReader;
 use App\CommissionCalculator\Reader\ExchangeRatesApiDataReader;
+use UnexpectedValueException;
 
 class CommissionCalculator
 {
@@ -26,7 +27,7 @@ class CommissionCalculator
 
             $binNumberCountryInfo = new BinListDataReader($this->config->getBinListApiSource(), $bin);
             if (!$binNumberCountryInfo->hasCountryAlpha2()) {
-                throw new \UnexpectedValueException('Cannot get bin country.');
+                throw new UnexpectedValueException('Cannot get bin country.');
             }
 
             $exchangeRateInfo = new ExchangeRatesApiDataReader($this->config->getExchangeRatesApiSource(), $currency);

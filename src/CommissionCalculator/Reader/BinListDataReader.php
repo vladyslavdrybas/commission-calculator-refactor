@@ -2,6 +2,8 @@
 
 namespace App\CommissionCalculator\Reader;
 
+use UnexpectedValueException;
+
 class BinListDataReader extends AbstractDataReader implements BinNumberCountryDataReader
 {
     protected string $resource = '';
@@ -17,7 +19,7 @@ class BinListDataReader extends AbstractDataReader implements BinNumberCountryDa
     {
         $data = $this->read();
         if (!$this->hasCountryAlpha2()) {
-            throw new \UnexpectedValueException('Cannot find "country" for BIN.');
+            throw new UnexpectedValueException('Cannot find "country" for BIN.');
         }
 
         return $data['country']['alpha2'];
