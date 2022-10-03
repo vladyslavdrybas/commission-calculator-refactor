@@ -1,0 +1,56 @@
+{
+    "name": "vladyslavdrybas/commission-calculator-refactor",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Vladyslav Drybas"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "~8.0.0",
+        "ext-json": "*",
+        "composer/package-versions-deprecated": "1.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "phpmd/phpmd": "^2.9",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "auto-scripts": {
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ],
+        "code-check": [
+            "./vendor/bin/phpmd src,public ansi phpmd.xml",
+            "./vendor/bin/phpcs --standard=phpcs.xml"
+        ],
+        "test": [
+            "APP_ENV=test ./vendor/bin/phpunit --testdox --configuration ./phpunit.xml"
+        ]
+    }
+}

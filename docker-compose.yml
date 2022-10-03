@@ -1,0 +1,20 @@
+version: '3.9'
+
+x-php-variables: &php-environment
+    environment:
+        - APP_ENV=dev
+
+services:
+    php:
+        build:
+          context: .
+          dockerfile: ./Dockerfile
+          target: app_php
+        healthcheck:
+          interval: 10s
+          timeout: 3s
+          retries: 3
+          start_period: 30s
+        volumes:
+          - .:/srv/app
+        <<: *php-environment
