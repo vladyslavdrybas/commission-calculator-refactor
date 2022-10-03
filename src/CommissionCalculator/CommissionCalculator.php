@@ -25,13 +25,17 @@ class CommissionCalculator
             $p = explode(",",$row);
             $p2 = explode(':', $p[0]);
             $value[0] = trim($p2[1], '"');
+            $bin = $value[0];
+
             $p2 = explode(':', $p[1]);
             $value[1] = trim($p2[1], '"');
+            $amount = $value[1];
+
             $p2 = explode(':', $p[2]);
             $value[2] = trim($p2[1], '"}');
             $currency = $value[2];
 
-            $binNumberCountryInfo = new BinListDataReader('https://lookup.binlist.net/', $value[0]);
+            $binNumberCountryInfo = new BinListDataReader('https://lookup.binlist.net/', $bin);
             if (!$binNumberCountryInfo->hasCountryAlpha2())
                 die('error!');
 
@@ -39,10 +43,10 @@ class CommissionCalculator
             $rate = (new ExchangeRatesApiDataReader('https://api.exchangeratesapi.io/latest', $currency))->getRate();
 
             if ($currency == 'EUR' or $rate == 0) {
-                $amntFixed = $value[1];
+                $amntFixed = $amount;
             }
             if ($currency != 'EUR' or $rate > 0) {
-                $amntFixed = $value[1] / $rate;
+                $amntFixed = $amount / $rate;
             }
 
             $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
