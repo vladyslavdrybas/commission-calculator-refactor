@@ -18,6 +18,6 @@ class CommissionCalculatorConfig extends AbstractModuleConfig
 
     public function getExchangeRatesApiSource(): string
     {
-        return $this->get(CommissionCalculatorConstants::KEY_EXCHANGE_RATES_API_SOURCE) ?? 'https://api.exchangeratesapi.io/latest';
+        return $this->get(CommissionCalculatorConstants::KEY_EXCHANGE_RATES_API_SOURCE) ?? 'https://api.exchangeratesapi.io/latest?base=EUR';
     }
 }
