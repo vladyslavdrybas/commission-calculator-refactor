@@ -13,11 +13,13 @@ class CommissionCalculatorConfig extends AbstractModuleConfig
 
     public function getBinListApiSource(): string
     {
-        return $this->get(CommissionCalculatorConstants::KEY_BIN_LIST_API_SOURCE) ?? 'https://lookup.binlist.net/';
+        return $this->get(CommissionCalculatorConstants::KEY_BIN_LIST_API_SOURCE)
+            ?? 'https://lookup.binlist.net/';
     }
 
     public function getExchangeRatesApiSource(): string
     {
-        return $this->get(CommissionCalculatorConstants::KEY_EXCHANGE_RATES_API_SOURCE) ?? 'https://api.exchangeratesapi.io/latest?base=EUR';
+        return $this->get(CommissionCalculatorConstants::KEY_EXCHANGE_RATES_API_SOURCE)
+            ?? 'https://api.exchangeratesapi.io/latest?base=EUR';
     }
 }

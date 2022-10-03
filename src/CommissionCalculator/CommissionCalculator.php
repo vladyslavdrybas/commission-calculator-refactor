@@ -12,7 +12,8 @@ class CommissionCalculator
 {
     protected CommissionCalculatorConfig $config;
 
-    public function __construct(CommissionCalculatorConfig $config) {
+    public function __construct(CommissionCalculatorConfig $config)
+    {
         $this->config = $config;
     }
 
@@ -20,10 +21,13 @@ class CommissionCalculator
     {
         $commissions = [];
 
-        foreach (explode("\n", file_get_contents($commissionSourceName)) as $row) {
-            if (empty($row)) break;
+        $transactions = explode("\n", file_get_contents($commissionSourceName));
+        foreach ($transactions as $transaction) {
+            if (empty($transaction)) {
+                break;
+            }
 
-            ['bin' => $bin, 'amount' => $amount, 'currency' => $currency] = $this->fetchTransaction($row);
+            ['bin' => $bin, 'amount' => $amount, 'currency' => $currency] = $this->fetchTransaction($transaction);
 
             $binNumberCountryInfo = new BinListDataReader($this->config->getBinListApiSource(), $bin);
             if (!$binNumberCountryInfo->hasCountryAlpha2()) {
@@ -42,10 +46,10 @@ class CommissionCalculator
 
             $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
 
-            $commission = $amntFixed * ($isEu === true  ? 0.01 : 0.02);
+            $commission = $amntFixed * ($isEu === true ? 0.01 : 0.02);
             $commissions[] = $commission;
 
-            echo sprintf("Currency: %s; Commission: %s", $currency ,$commission);
+            echo sprintf("Currency: %s; Commission: %s", $currency, $commission);
             print "\n";
         }
 
