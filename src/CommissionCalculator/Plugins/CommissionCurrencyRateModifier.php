@@ -20,11 +20,11 @@ class CommissionCurrencyRateModifier implements CommissionModifier
         $this->exchangeRateDataReader->addCurrency($dto->getCurrency());
         $rate = $this->exchangeRateDataReader->getRate();
 
-        if ($rate <= 0) {
+        if ($rate < 0) {
             throw new InvalidArgumentException('Invalid exchange rate.');
         }
 
-        if ($dto->getCurrency() !== 'EUR') {
+        if ($rate > 0) {
             $dto->setCommission($dto->getCommission() / $rate);
         }
 
