@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\CommissionCalculator;
 
 use App\CommissionCalculator\Reader\BinListDataReader;
+use App\CommissionCalculator\Reader\ExchangeRatesApiDataReader;
 
 class CommissionCalculator
 {
@@ -22,6 +23,7 @@ class CommissionCalculator
             $value[1] = trim($p2[1], '"');
             $p2 = explode(':', $p[2]);
             $value[2] = trim($p2[1], '"}');
+            $currency = $value[2];
 
             $binNumberCountryInfo = new BinListDataReader('https://lookup.binlist.net/', $value[0]);
             if (!$binNumberCountryInfo->hasCountryAlpha2())
@@ -29,12 +31,12 @@ class CommissionCalculator
 
             $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
 
-            $rate = @json_decode(file_get_contents('https://api.exchangeratesapi.io/latest'), true)['rates'][$value[2]];
+            $rate = (new ExchangeRatesApiDataReader('https://api.exchangeratesapi.io/latest', $currency))->getRate();
 
-            if ($value[2] == 'EUR' or $rate == 0) {
+            if ($currency == 'EUR' or $rate == 0) {
                 $amntFixed = $value[1];
             }
-            if ($value[2] != 'EUR' or $rate > 0) {
+            if ($currency != 'EUR' or $rate > 0) {
                 $amntFixed = $value[1] / $rate;
             }
 

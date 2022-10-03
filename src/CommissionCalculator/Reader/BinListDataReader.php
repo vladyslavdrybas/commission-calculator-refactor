@@ -23,11 +23,6 @@ class BinListDataReader extends AbstractDataReader implements BinNumberCountryDa
         return $data['country']['alpha2'];
     }
 
-    public function isEmpty(): bool
-    {
-        return empty($this->read());
-    }
-
     public function hasCountryAlpha2(): bool
     {
         return $this->hasCountry() && array_key_exists('alpha2', $this->read()['country']);

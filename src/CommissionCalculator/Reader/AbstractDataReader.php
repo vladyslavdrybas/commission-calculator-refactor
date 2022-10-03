@@ -7,7 +7,11 @@ abstract class AbstractDataReader implements DataReader
     protected array $data = [];
 
     abstract protected function getSourceUrl(): string;
-    abstract public function isEmpty(): bool;
+
+    public function isEmpty(): bool
+    {
+        return empty($this->read());
+    }
 
     public function read(): array
     {
