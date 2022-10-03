@@ -6,7 +6,7 @@
 # Original code does not work
 
 rate source `https://api.exchangeratesapi.io/latest` requires access_key, which makes it not possible to get the original results for future comparing.
-```
+``` json
 {
     "success": false,
     "error": {
@@ -16,3 +16,25 @@ rate source `https://api.exchangeratesapi.io/latest` requires access_key, which 
     }
 }
 ```
+
+# Changes
+
+## Invalid exchange rate
+I added exception in case api is not responding.
+
+``` php
+if ($rate <= 0) {
+throw new InvalidArgumentException('Invalid exchange rate.');
+}
+```
+
+## Exchange rate api
+As exchange api is not working, I added fake json in tests.
+
+## Todo
+Add ceiling of commissions.
+
+Expand tests by covering:
+* invalid exchange rate
+* different transaction dto
+* modifiers tests
