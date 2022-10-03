@@ -13,14 +13,14 @@ class ExchangeRatesApiDataReaderTest extends TestCase
     public function getRatesTestData(): iterable
     {
         $source = __DIR__ . '/_data/exchangeratesapi.json';
-        yield 'exchangeratesapi.fake.eur' => [
+        yield 'exchangeratesapi.fake.usd' => [
             [
                 'source' => $source,
-                'currency' => 'EUR',
+                'currency' => 'USD',
                 'expect' => 0.813399,
             ],
         ];
-        yield 'exchangeratesapi.fake.usd' => [
+        yield 'exchangeratesapi.fake.jpy' => [
             [
                 'source' => $source,
                 'currency' => 'JPY',
@@ -36,7 +36,9 @@ class ExchangeRatesApiDataReaderTest extends TestCase
      */
     public function testExchangeRates($input): void
     {
-        $reader = new ExchangeRatesApiDataReader($input['source'], $input['currency']);
+        $reader = new ExchangeRatesApiDataReader($input['source']);
+        $reader->addCurrency($input['currency']);
+
         $this->assertSame($reader->getRate(), $input['expect']);
     }
 }

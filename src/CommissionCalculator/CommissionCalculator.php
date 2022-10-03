@@ -6,6 +6,7 @@ namespace App\CommissionCalculator;
 
 use App\CommissionCalculator\Reader\BinListDataReader;
 use App\CommissionCalculator\Reader\BinNumberCountryDataReader;
+use App\CommissionCalculator\Reader\ExchangeRateDataReader;
 use App\CommissionCalculator\Reader\ExchangeRatesApiDataReader;
 use UnexpectedValueException;
 
@@ -13,13 +14,16 @@ class CommissionCalculator
 {
     protected CommissionCalculatorConfig $config;
     protected BinNumberCountryDataReader $binNumberCountryDataReader;
+    protected ExchangeRateDataReader $exchangeRateDataReader;
 
     public function __construct(
         CommissionCalculatorConfig $config,
-        BinNumberCountryDataReader $binNumberCountryDataReader
+        BinNumberCountryDataReader $binNumberCountryDataReader,
+        ExchangeRateDataReader $exchangeRateDataReader
     ) {
         $this->config = $config;
         $this->binNumberCountryDataReader = $binNumberCountryDataReader;
+        $this->exchangeRateDataReader = $exchangeRateDataReader;
     }
 
     public function calculate(string $commissionSourceName): array
@@ -39,8 +43,8 @@ class CommissionCalculator
                 throw new UnexpectedValueException('Cannot get bin country.');
             }
 
-            $exchangeRateInfo = new ExchangeRatesApiDataReader($this->config->getExchangeRatesApiSource(), $currency);
-            $rate = $exchangeRateInfo->getRate();
+            $this->exchangeRateDataReader->addCurrency($currency);
+            $rate = $this->exchangeRateDataReader->getRate();
 
             if ($currency == 'EUR' or $rate == 0) {
                 $amntFixed = $amount;

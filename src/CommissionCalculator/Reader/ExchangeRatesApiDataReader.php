@@ -7,9 +7,13 @@ class ExchangeRatesApiDataReader extends AbstractDataReader implements ExchangeR
     protected string $resource;
     protected string $currency;
 
-    public function __construct(string $resource, string $currency)
+    public function __construct(string $resource)
     {
         $this->resource = $resource;
+    }
+
+    public function addCurrency(string $currency): void
+    {
         $this->currency = $currency;
     }
 
