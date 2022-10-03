@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\CommissionCalculator;
 
+use App\CommissionCalculator\Reader\BinListDataReader;
+
 class CommissionCalculator
 {
     public function calculate(string $commissionSourceName): void
     {
         foreach (explode("\n", file_get_contents($commissionSourceName)) as $row) {
             if (empty($row)) break;
+
             $p = explode(",",$row);
             $p2 = explode(':', $p[0]);
             $value[0] = trim($p2[1], '"');
@@ -18,12 +21,11 @@ class CommissionCalculator
             $p2 = explode(':', $p[2]);
             $value[2] = trim($p2[1], '"}');
 
-            $binResults = file_get_contents('https://lookup.binlist.net/' .$value[0]);
-            if (!$binResults)
+            $binNumberCountryInfo = new BinListDataReader('https://lookup.binlist.net/', $value[0]);
+            if (!$binNumberCountryInfo->hasCountryAlpha2())
                 die('error!');
-            $r = json_decode($binResults);
 
-            $isEu = $this->isEu($r->country->alpha2);
+            $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
 
             $rate = @json_decode(file_get_contents('https://api.exchangeratesapi.io/latest'), true)['rates'][$value[2]];
 

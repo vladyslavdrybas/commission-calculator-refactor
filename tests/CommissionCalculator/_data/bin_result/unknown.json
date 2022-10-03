@@ -1,0 +1,11 @@
+{
+  "number": {
+    "length": 16,
+    "luhn": true
+  },
+  "scheme": "visa",
+  "type": null,
+  "brand": null,
+  "prepaid": null,
+  "bank": null
+}
