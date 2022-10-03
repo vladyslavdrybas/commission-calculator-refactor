@@ -4,6 +4,7 @@ namespace App\CommissionCalculator\Plugins;
 
 use App\CommissionCalculator\DataTransferObject\TransactionDto;
 use App\CommissionCalculator\Reader\ExchangeRateDataReader;
+use \InvalidArgumentException;
 
 class CommissionCurrencyRateModifier implements CommissionModifier
 {
@@ -19,7 +20,11 @@ class CommissionCurrencyRateModifier implements CommissionModifier
         $this->exchangeRateDataReader->addCurrency($dto->getCurrency());
         $rate = $this->exchangeRateDataReader->getRate();
 
-        if ($dto->getCurrency() != 'EUR' or $rate > 0) {
+        if ($rate <= 0) {
+            throw new InvalidArgumentException('Invalid exchange rate.');
+        }
+
+        if ($dto->getCurrency() !== 'EUR') {
             $dto->setCommission($dto->getCommission() / $rate);
         }
 
