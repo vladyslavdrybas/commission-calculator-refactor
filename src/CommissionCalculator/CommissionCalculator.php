@@ -9,6 +9,12 @@ use App\CommissionCalculator\Reader\ExchangeRatesApiDataReader;
 
 class CommissionCalculator
 {
+    protected CommissionCalculatorConfig $config;
+
+    public function __construct(CommissionCalculatorConfig $config) {
+        $this->config = $config;
+    }
+
     public function calculate(string $commissionSourceName): array
     {
         $commissions = [];
@@ -29,7 +35,6 @@ class CommissionCalculator
             if (!$binNumberCountryInfo->hasCountryAlpha2())
                 die('error!');
 
-            $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
 
             $rate = (new ExchangeRatesApiDataReader('https://api.exchangeratesapi.io/latest', $currency))->getRate();
 
@@ -40,7 +45,9 @@ class CommissionCalculator
                 $amntFixed = $value[1] / $rate;
             }
 
-            $commission = $amntFixed * ($isEu == 'yes' ? 0.01 : 0.02);
+            $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
+
+            $commission = $amntFixed * ($isEu === true  ? 0.01 : 0.02);
             $commissions[] = $commission;
 
             echo $commission;
@@ -50,43 +57,8 @@ class CommissionCalculator
         return $commissions;
     }
 
-    protected function isEu($c): string
+    protected function isEu($countryAlpha2): bool
     {
-        $result = false;
-
-        switch($c) {
-            case 'AT':
-            case 'BE':
-            case 'BG':
-            case 'CY':
-            case 'CZ':
-            case 'DE':
-            case 'DK':
-            case 'EE':
-            case 'ES':
-            case 'FI':
-            case 'FR':
-            case 'GR':
-            case 'HR':
-            case 'HU':
-            case 'IE':
-            case 'IT':
-            case 'LT':
-            case 'LU':
-            case 'LV':
-            case 'MT':
-            case 'NL':
-            case 'PO':
-            case 'PT':
-            case 'RO':
-            case 'SE':
-            case 'SI':
-            case 'SK':
-                $result = 'yes';
-                return $result;
-            default:
-                $result = 'no';
-        }
-        return $result;
+        return in_array($countryAlpha2, $this->config->getAllowedEuropeCountries());
     }
 }
