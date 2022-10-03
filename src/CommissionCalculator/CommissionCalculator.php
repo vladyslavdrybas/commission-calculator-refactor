@@ -22,18 +22,7 @@ class CommissionCalculator
         foreach (explode("\n", file_get_contents($commissionSourceName)) as $row) {
             if (empty($row)) break;
 
-            $p = explode(",",$row);
-            $p2 = explode(':', $p[0]);
-            $value[0] = trim($p2[1], '"');
-            $bin = $value[0];
-
-            $p2 = explode(':', $p[1]);
-            $value[1] = trim($p2[1], '"');
-            $amount = $value[1];
-
-            $p2 = explode(':', $p[2]);
-            $value[2] = trim($p2[1], '"}');
-            $currency = $value[2];
+            ['bin' => $bin, 'amount' => $amount, 'currency' => $currency] = $this->fetchTransaction($row);
 
             $binNumberCountryInfo = new BinListDataReader($this->config->getBinListApiSource(), $bin);
             if (!$binNumberCountryInfo->hasCountryAlpha2())
@@ -54,11 +43,16 @@ class CommissionCalculator
             $commission = $amntFixed * ($isEu === true  ? 0.01 : 0.02);
             $commissions[] = $commission;
 
-            echo $commission;
+            echo sprintf("Currency: %s; Commission: %s", $currency ,$commission);
             print "\n";
         }
 
         return $commissions;
+    }
+
+    protected function fetchTransaction($row): array
+    {
+        return json_decode($row, true);
     }
 
     protected function isEu($countryAlpha2): bool
