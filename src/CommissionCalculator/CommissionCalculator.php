@@ -33,14 +33,6 @@ class CommissionCalculator
             }
 
             $transactionsCollection[$key] = $transactionDto;
-
-            echo sprintf(
-                "Currency: %s; Commission: %s; Amount: %s;",
-                $transactionDto->getCurrency(),
-                $transactionDto->getCommission(),
-                $transactionDto->getAmount()
-            );
-            print "\n";
         }
 
         return $transactionsCollection;

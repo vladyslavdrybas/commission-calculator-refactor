@@ -2,6 +2,8 @@
 
 namespace App\CommissionCalculator;
 
+use App\CommissionCalculator\DataTransferObject\TransactionDto;
+
 class CommissionCalculatorFacade
 {
     protected CommissionCalculatorFactoryInterface $factory;
@@ -14,5 +16,14 @@ class CommissionCalculatorFacade
     public function calculate(string $commissionSourceName): array
     {
         return $this->factory->createCommissionCalculator()->calculate($commissionSourceName);
+    }
+
+    public function printTransactionTransfers(array $transactions): void
+    {
+        foreach ($transactions as $transaction) {
+            /** @var TransactionDto $transaction */
+            echo $transaction->getCommission();
+            print "\n";
+        }
     }
 }
