@@ -8,4 +8,5 @@ if (empty($argv[1])) {
     throw new \Exception('Please, use attribute to set commissions source.');
 }
 
-(new \App\CommissionCalculator\CommissionCalculator())->calculate($argv[1]);
+$calculatorFactory = new \App\CommissionCalculator\CommissionCalculatorFactory();
+(new \App\CommissionCalculator\CommissionCalculatorFacade($calculatorFactory))->calculate($argv[1]);

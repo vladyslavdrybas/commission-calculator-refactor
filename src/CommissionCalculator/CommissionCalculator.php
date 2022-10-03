@@ -8,8 +8,10 @@ use App\CommissionCalculator\Reader\BinListDataReader;
 
 class CommissionCalculator
 {
-    public function calculate(string $commissionSourceName): void
+    public function calculate(string $commissionSourceName): array
     {
+        $commissions = [];
+
         foreach (explode("\n", file_get_contents($commissionSourceName)) as $row) {
             if (empty($row)) break;
 
@@ -36,9 +38,14 @@ class CommissionCalculator
                 $amntFixed = $value[1] / $rate;
             }
 
-            echo $amntFixed * ($isEu == 'yes' ? 0.01 : 0.02);
+            $commission = $amntFixed * ($isEu == 'yes' ? 0.01 : 0.02);
+            $commissions[] = $commission;
+
+            echo $commission;
             print "\n";
         }
+
+        return $commissions;
     }
 
     protected function isEu($c): string
