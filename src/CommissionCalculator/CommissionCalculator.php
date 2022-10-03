@@ -25,8 +25,9 @@ class CommissionCalculator
             ['bin' => $bin, 'amount' => $amount, 'currency' => $currency] = $this->fetchTransaction($row);
 
             $binNumberCountryInfo = new BinListDataReader($this->config->getBinListApiSource(), $bin);
-            if (!$binNumberCountryInfo->hasCountryAlpha2())
-                die('error!');
+            if (!$binNumberCountryInfo->hasCountryAlpha2()) {
+                throw new \UnexpectedValueException('Cannot get bin country.');
+            }
 
             $exchangeRateInfo = new ExchangeRatesApiDataReader($this->config->getExchangeRatesApiSource(), $currency);
             $rate = $exchangeRateInfo->getRate();
