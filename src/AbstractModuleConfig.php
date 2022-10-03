@@ -12,6 +12,6 @@ abstract class AbstractModuleConfig implements ModuleConfiguration
 
     public function get(string $key): mixed
     {
-        return $this->config[$key];
+        return array_key_exists($key, $this->config) ? $this->config[$key] : null;
     }
 }

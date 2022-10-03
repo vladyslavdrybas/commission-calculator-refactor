@@ -35,12 +35,12 @@ class CommissionCalculator
             $value[2] = trim($p2[1], '"}');
             $currency = $value[2];
 
-            $binNumberCountryInfo = new BinListDataReader('https://lookup.binlist.net/', $bin);
+            $binNumberCountryInfo = new BinListDataReader($this->config->getBinListApiSource(), $bin);
             if (!$binNumberCountryInfo->hasCountryAlpha2())
                 die('error!');
 
-
-            $rate = (new ExchangeRatesApiDataReader('https://api.exchangeratesapi.io/latest', $currency))->getRate();
+            $exchangeRateInfo = new ExchangeRatesApiDataReader($this->config->getExchangeRatesApiSource(), $currency);
+            $rate = $exchangeRateInfo->getRate();
 
             if ($currency == 'EUR' or $rate == 0) {
                 $amntFixed = $amount;
