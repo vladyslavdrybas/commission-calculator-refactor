@@ -10,11 +10,12 @@ use PHPUnit\Framework\TestCase;
 
 class CommissionCalculatorTest extends TestCase
 {
-    public function test(): void
+    public function testCalculation(): void
     {
         $source = __DIR__ . '/_data/input.txt';
 
         $calculatorFactory = new CommissionCalculatorFactory();
-        (new CommissionCalculatorFacade($calculatorFactory))->calculate($source);
+        $calculatorFacade = new CommissionCalculatorFacade($calculatorFactory);
+        $calculatorFacade->calculate($source);
     }
 }

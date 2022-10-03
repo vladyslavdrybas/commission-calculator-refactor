@@ -69,7 +69,7 @@ class BinListDataReaderTest extends TestCase
 
     public function testInheritance(): void
     {
-        $reader = new BinListDataReader('', '');
+        $reader = new BinListDataReader('');
         $this->assertInstanceOf(BinNumberCountryDataReader::class, $reader);
         $this->assertInstanceOf(DataReader::class, $reader);
     }
@@ -78,7 +78,8 @@ class BinListDataReaderTest extends TestCase
     {
         $this->expectException(\UnexpectedValueException::class);
 
-        $reader = new BinListDataReader(__DIR__ . '/_data/bin_result/', 'unknown.json');
+        $reader = new BinListDataReader(__DIR__ . '/_data/bin_result/');
+        $reader->addBin('unknown.json');
         $reader->getCountryAlpha2();
     }
 
@@ -90,7 +91,8 @@ class BinListDataReaderTest extends TestCase
      */
     public function testCountryAlpha2($input): void
     {
-        $reader = new BinListDataReader($input['source'], $input['object']);
+        $reader = new BinListDataReader($input['source']);
+        $reader->addBin($input['object']);
 
         $this->assertSame($reader->getCountryAlpha2(), $input['expect']['alpha2']);
     }

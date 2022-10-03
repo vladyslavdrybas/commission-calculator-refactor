@@ -7,12 +7,16 @@ use UnexpectedValueException;
 class BinListDataReader extends AbstractDataReader implements BinNumberCountryDataReader
 {
     protected string $resource = '';
-    protected string $object = '';
+    protected string $bin;
 
-    public function __construct(string $resource, string $object = '')
+    public function __construct(string $resource)
     {
         $this->resource = $resource;
-        $this->object = $object;
+    }
+
+    public function addBin(string $bin): void
+    {
+        $this->bin = $bin;
     }
 
     public function getCountryAlpha2(): string
@@ -37,6 +41,6 @@ class BinListDataReader extends AbstractDataReader implements BinNumberCountryDa
 
     protected function getSourceUrl(): string
     {
-        return $this->resource . $this->object;
+        return $this->resource . $this->bin;
     }
 }

@@ -5,16 +5,21 @@ declare(strict_types=1);
 namespace App\CommissionCalculator;
 
 use App\CommissionCalculator\Reader\BinListDataReader;
+use App\CommissionCalculator\Reader\BinNumberCountryDataReader;
 use App\CommissionCalculator\Reader\ExchangeRatesApiDataReader;
 use UnexpectedValueException;
 
 class CommissionCalculator
 {
     protected CommissionCalculatorConfig $config;
+    protected BinNumberCountryDataReader $binNumberCountryDataReader;
 
-    public function __construct(CommissionCalculatorConfig $config)
-    {
+    public function __construct(
+        CommissionCalculatorConfig $config,
+        BinNumberCountryDataReader $binNumberCountryDataReader
+    ) {
         $this->config = $config;
+        $this->binNumberCountryDataReader = $binNumberCountryDataReader;
     }
 
     public function calculate(string $commissionSourceName): array
@@ -29,8 +34,8 @@ class CommissionCalculator
 
             ['bin' => $bin, 'amount' => $amount, 'currency' => $currency] = $this->fetchTransaction($transaction);
 
-            $binNumberCountryInfo = new BinListDataReader($this->config->getBinListApiSource(), $bin);
-            if (!$binNumberCountryInfo->hasCountryAlpha2()) {
+            $this->binNumberCountryDataReader->addBin($bin);
+            if (!$this->binNumberCountryDataReader->hasCountryAlpha2()) {
                 throw new UnexpectedValueException('Cannot get bin country.');
             }
 
@@ -44,7 +49,7 @@ class CommissionCalculator
                 $amntFixed = $amount / $rate;
             }
 
-            $isEu = $this->isEu($binNumberCountryInfo->getCountryAlpha2());
+            $isEu = $this->isEu($this->binNumberCountryDataReader->getCountryAlpha2());
 
             $commission = $amntFixed * ($isEu === true ? 0.01 : 0.02);
             $commissions[] = $commission;
